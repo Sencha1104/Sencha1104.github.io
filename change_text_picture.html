@@ -22,6 +22,7 @@
     <section>
       <h3>画像⇒テキスト</h3>
       <input class="button" type="file" accept="image/*" onchange="decodeImageToText(event)">
+      <canvas id="canvas2" width="64" height="64" style="width: 256px; height: 256px;"></canvas><br><br>
       <p><strong>復元されたテキスト:</strong></p>
       <textarea id="outputText" readonly></textarea>
     </section>
@@ -43,7 +44,9 @@
 
   <script>
     const canvas = document.getElementById('canvas');
+    const canvas2 = document.getElementById('canvas2');
     const ctx = canvas.getContext('2d');
+    const ctx2 = canvas2.getContext('2d');
 
     function encodeTextToImage() {
       const text = document.getElementById('textInput').value;
@@ -91,10 +94,10 @@
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
-          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+          canvas2.width = img.width;
+          canvas2.height = img.height;
+          ctx2.drawImage(img, 0, 0);
+          const imgData = ctx2.getImageData(0, 0, canvas2.width, canvas2.height).data;
 
           const bytes = [];
           for (let i = 0; i < imgData.length; i += 4) {
