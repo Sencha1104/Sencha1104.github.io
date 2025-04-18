@@ -61,6 +61,11 @@ a{
     color: white;
     font-weight: bold;
     text-decoration: none;
+    height: 24px;
+}
+
+a p{
+    margin: 0px;
 }
 
 .button {
