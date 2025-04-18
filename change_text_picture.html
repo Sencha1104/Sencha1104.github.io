@@ -10,15 +10,20 @@
     <h1>テキスト⇔画像 変換ツール</h1>
   </header>
 
-  <textarea id="textInput" placeholder="ここにメッセージを入力（日本語や絵文字もOK）"></textarea><br>
-  <button onclick="encodeTextToImage()">画像に変換</button>
-  <button onclick="downloadImage()">画像を保存</button><br>
-
-  <canvas id="canvas" width="64" height="64" style="width: 256px; height: 256px;"></canvas><br><br>
-
-  <input type="file" accept="image/*" onchange="decodeImageToText(event)">
-  <p><strong>復元されたテキスト:</strong></p>
-  <textarea id="outputText" readonly></textarea>
+  <main>
+    <section>
+      <textarea id="textInput" placeholder="ここにメッセージを入力（日本語や絵文字もOK）"></textarea><br>
+      <button onclick="encodeTextToImage()">画像に変換</button>
+      <button onclick="downloadImage()">画像を保存</button><br>
+    
+      <canvas id="canvas" width="64" height="64" style="width: 256px; height: 256px;"></canvas><br><br>
+    </section>
+    <section>
+      <input type="file" accept="image/*" onchange="decodeImageToText(event)">
+      <p><strong>復元されたテキスト:</strong></p>
+      <textarea id="outputText" readonly></textarea>
+    </section>
+  </main>
 
   <script>
     const canvas = document.getElementById('canvas');
