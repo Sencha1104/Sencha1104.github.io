@@ -12,6 +12,7 @@
 
   <main>
     <section>
+      <h3>テキスト⇒画像</h3>
       <textarea id="textInput" placeholder="ここにメッセージを入力（日本語や絵文字もOK）"></textarea><br>
       <a class="button" onclick="encodeTextToImage()">画像に変換</a>
       <a class="button" onclick="downloadImage()">画像を保存</a><br>
@@ -19,6 +20,7 @@
       <canvas id="canvas" width="64" height="64" style="width: 256px; height: 256px;"></canvas><br><br>
     </section>
     <section>
+      <h3>画像⇒テキスト</h3>
       <input type="file" accept="image/*" onchange="decodeImageToText(event)">
       <p><strong>復元されたテキスト:</strong></p>
       <textarea id="outputText" readonly></textarea>
