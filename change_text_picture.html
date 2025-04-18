@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>テキスト⇔画像 変換ツール</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>テキスト⇔画像 変換ツール</h1>
+  </header>
+
+  <textarea id="textInput" placeholder="ここにメッセージを入力（日本語や絵文字もOK）"></textarea><br>
+  <button onclick="encodeTextToImage()">画像に変換</button>
+  <button onclick="downloadImage()">画像を保存</button><br>
+
+  <canvas id="canvas" width="64" height="64" style="width: 256px; height: 256px;"></canvas><br><br>
+
+  <input type="file" accept="image/*" onchange="decodeImageToText(event)">
+  <p><strong>復元されたテキスト:</strong></p>
+  <textarea id="outputText" readonly></textarea>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function encodeTextToImage() {
+      const text = document.getElementById('textInput').value;
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const length = data.length;
+
+      // ヘッダー（3バイト）
+      const payload = new Uint8ClampedArray(length + 3);
+      payload[0] = (length >> 16) & 0xFF;
+      payload[1] = (length >> 8) & 0xFF;
+      payload[2] = length & 0xFF;
+      payload.set(data, 3);
+
+      const pixelCount = Math.ceil(payload.length / 3);
+      const side = Math.ceil(Math.sqrt(pixelCount));
+      canvas.width = side;
+      canvas.height = side;
+      canvas.style.width = (side * 32) + "px"; // 拡大倍率調整（32倍）
+      canvas.style.height = (side * 32) + "px";
+      ctx.imageSmoothingEnabled = false;
+
+      const imgData = ctx.createImageData(side, side);
+      for (let i = 0, j = 0; i < pixelCount; i++, j += 3) {
+        imgData.data[i * 4 + 0] = payload[j] || 0;     // R
+        imgData.data[i * 4 + 1] = payload[j + 1] || 0; // G
+        imgData.data[i * 4 + 2] = payload[j + 2] || 0; // B
+        imgData.data[i * 4 + 3] = 255;                 // A
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    function downloadImage() {
+      const link = document.createElement('a');
+      link.download = 'encoded_message.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    function decodeImageToText(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+          const bytes = [];
+          for (let i = 0; i < imgData.length; i += 4) {
+            bytes.push(imgData[i]);     // R
+            bytes.push(imgData[i + 1]); // G
+            bytes.push(imgData[i + 2]); // B
+          }
+
+          const length = (bytes[0] << 16) | (bytes[1] << 8) | bytes[2];
+          const messageBytes = bytes.slice(3, 3 + length);
+          const decoder = new TextDecoder();
+          const text = decoder.decode(new Uint8Array(messageBytes));
+          document.getElementById('outputText').value = text;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
