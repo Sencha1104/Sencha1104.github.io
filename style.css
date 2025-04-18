@@ -55,7 +55,7 @@ section {
     max-width: 700px;
 }
 
-a.button {
+.button {
     display: inline-block;
     padding: 10px 20px;
     background-color: #4CAF50;
